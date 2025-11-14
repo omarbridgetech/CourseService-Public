@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: course-app
-          image: omar99awaisha/course-services:v1.0
+          image: omar99awaisha/course-services:v1.1
           ports:
             - containerPort: 8081
           env:
