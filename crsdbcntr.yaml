@@ -1,0 +1,50 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: mysql-secret
+type: Opaque
+data:
+  mysql-password: MTIzNA==  # base64 of 'Abed@2014'
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: crsdbcntr
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: crsdbcntr
+  template:
+    metadata:
+      labels:
+        app: crsdbcntr
+    spec:
+      containers:
+        - name: crsdbcntr
+          image: mysql:latest
+          ports:
+            - containerPort: 3306
+          env:
+            - name: MYSQL_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mysql-secret
+                  key: mysql-password
+            - name: MYSQL_DATABASE
+              value: coursedb
+            - name: MYSQL_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mysql-secret
+                  key: mysql-password
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: crsdbcntr
+spec:
+  selector:
+    app: crsdbcntr
+  ports:
+    - port: 3306
